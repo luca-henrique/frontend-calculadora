@@ -1,7 +1,7 @@
 import './display.css';
 
 interface DisplayProps {
-  value: number;
+  value: string;
 }
 
 const Display = ({value}: DisplayProps) => {
