@@ -7,19 +7,51 @@ import {useState} from 'react';
 const Calculator = () => {
   const [displayValue, setDisplayValue] = useState('0');
   const [clearDisplay, setClearDisplay] = useState(false);
-  const [operation, setOperation] = useState(null);
+  const [operation, setOperation] = useState('');
   const [values, setValues] = useState([0, 0]);
   const [current, setCurrent] = useState(0);
 
   const clearMemory = () => {
     setDisplayValue('0');
     setClearDisplay(false);
-    setOperation(null);
+    setOperation('');
     setValues([0, 0]);
     setCurrent(0);
   };
 
-  const changeOperation = () => {};
+  const changeOperation = (operationType: any) => {
+    if (current === 0) {
+      setOperation(operationType);
+      setCurrent(1);
+      setClearDisplay(true);
+    } else {
+      const finashOperation = operation === '=';
+
+      const currentOperation = operation;
+
+      const newValues = [...values];
+
+      try {
+        newValues[0] = eval(
+          `${newValues[0]} ${currentOperation} ${newValues[1]}`,
+        );
+      } catch (error) {
+        newValues[0] = values[0];
+      }
+
+      newValues[1] = 0;
+
+      setDisplayValue(`${newValues[0]}`);
+
+      setOperation(finashOperation ? '' : operation);
+
+      setCurrent(finashOperation ? 0 : 1);
+
+      setClearDisplay(!finashOperation);
+
+      setValues(newValues);
+    }
+  };
 
   const addDigit = (n: string) => {
     if (n === '.' && displayValue.includes('.')) {
@@ -29,6 +61,10 @@ const Calculator = () => {
     const clearDisplayLocal = displayValue === '0' || clearDisplay;
 
     const currentValue = clearDisplayLocal ? '' : displayValue;
+
+    if (clearDisplayLocal && current === 1) {
+      setClearDisplay(false);
+    }
 
     const displayValueLocal = currentValue + n;
 
@@ -48,6 +84,7 @@ const Calculator = () => {
   };
 
   console.log(values);
+  console.log(current);
 
   return (
     <div className='calculator'>
